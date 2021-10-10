@@ -28,9 +28,19 @@ void printMenu()
     cout << " - To exit type 'x'" << endl;
 }
 
+template <typename Cont, typename Pred>
+Cont filter(const Cont &container, Pred predicate) 
+{
+    Cont result;
+    std::copy_if(container.begin(), container.end(), std::back_inserter(result), predicate);
+    return result;
+}
+
 void CLI::StartFilesFilter(Logger *logger)
 {
     char menuSelectionInput;
+    string inputDatetime;
+    vector<Logger::LogData> filtered;
     while (true)
     {
         printMenu(); 
@@ -44,7 +54,16 @@ void CLI::StartFilesFilter(Logger *logger)
             } 
             break;
         case 'd':
-            //todo
+            cout << "Enter date or/and time (for example: '2021-10-10' or/and 20:20): ";
+            getline(cin >> ws, inputDatetime);
+            cout << endl;
+
+            filtered = filter(logger->getFilesLogList(), [&](Logger::LogData logItem) { return logItem.datetime.find(inputDatetime) != string::npos; });
+            for (auto const& logItem : filtered)
+            {
+                cout << logItem.datetime << " "  << logItem.filename << " " << logItem.status << endl;
+            }
+            cout << endl; 
             break;
         case 'r':
             //todo
