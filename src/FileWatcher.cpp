@@ -5,9 +5,11 @@
 #include <chrono>
 #include <thread>
 #include <unordered_map>
+#include <regex>
 
 using std::string;
 using std::unordered_map;
+using std::regex;
 
 FileWatcher::FileWatcher(Logger *logger) : m_logger(logger)
 {
@@ -22,6 +24,10 @@ void FileWatcher::startFileWatcher(const string hotFolderPath, const string back
     std::chrono::duration<int, std::milli> hotFolderUpdateFrequency = std::chrono::milliseconds(1000);
     unordered_map<string, std::filesystem::file_time_type> filesList;
     string fileDeleteKeyStr = "delete_";
+    int fileDeleteAtDatetimePrefixSize = 17;
+    //2021-10-09 231319 (note: file cannot have ':' symbol)
+    regex fileDeleteAtDatetimeRegex {R"(^\d{4}-([0]\d|1[0-2])-([0-2]\d|3[01]) ([0-1]?[0-9]|2[0-3])[0-5][0-9][0-5][0-9])"}; 
+    bool isFileDeleteAtDatetime = false;
 
     while (true)
     {
@@ -36,7 +42,31 @@ void FileWatcher::startFileWatcher(const string hotFolderPath, const string back
             // check if file needs to be deleted
             if (file.path().filename().string().substr(0, fileDeleteKeyStr.size()).compare(fileDeleteKeyStr) == 0)
             {
+                // check for file which needs to be deleted at certain time
+                if (regex_match(file.path().filename().string().substr(fileDeleteKeyStr.size(), fileDeleteAtDatetimePrefixSize), fileDeleteAtDatetimeRegex))
+                {
+                    string fileDeleteDatetime = file.path().filename().string().substr(fileDeleteKeyStr.size(), fileDeleteAtDatetimePrefixSize);
+                    // add missing ':' symbols
+                    fileDeleteDatetime.insert(13, ":");
+                    fileDeleteDatetime.insert(16, ":");
+
+                    if (m_logger->getCurrentDateTimeStr() < fileDeleteDatetime)
+                    {
+                        // don't delete file just yet
+                        continue;
+                    }
+                    isFileDeleteAtDatetime = true;
+                }
+
                 string deletedFileName = file.path().filename().string().substr(fileDeleteKeyStr.size());
+                if (isFileDeleteAtDatetime)
+                {
+                    // +1 because of '_' after datetime
+                    // used prefix 'delete_2021-10-10 234959_'
+                    deletedFileName = file.path().filename().string().substr(fileDeleteKeyStr.size() + fileDeleteAtDatetimePrefixSize + 1);
+                    isFileDeleteAtDatetime = false;
+                }
+
                 filesList.erase(std::filesystem::path(hotFolderPath + "/" + deletedFileName).make_preferred().string());
 
                 std::filesystem::remove(file);
