@@ -3,6 +3,7 @@
 
 #include "CLI.h"
 #include "FileWatcher.h"
+#include "Logger.h"
 
 using std::string;
 
@@ -12,6 +13,7 @@ int main()
     string hotFolderPath, backupFolderPath;
     CLI::GetHotAndBackupFolderPaths(hotFolderPath, backupFolderPath);
 
-    FileWatcher fileWatcher;
+    Logger logger("log.txt");
+    FileWatcher fileWatcher(logger);
     fileWatcher.startFileWatcher(hotFolderPath, backupFolderPath);
 }
