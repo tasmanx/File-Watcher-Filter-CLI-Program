@@ -6,18 +6,46 @@
 #include <filesystem>
 #include <vector>
 #include <regex>
+#include <fstream>
 
 using namespace std;
 
+const string SettingsFilename = "settings.txt";
+
+void writeHotAndBacupFolderPathToSettingFile(string &hotFolderPath, string &backupFolderPath)
+{
+    ofstream file(SettingsFilename);
+    file << hotFolderPath << endl;
+    file << backupFolderPath << endl;
+    file.close();
+}
+
+void readHotAndBacupFolderPathFromSettingFile(string &hotFolderPath, string &backupFolderPath)
+{
+    ifstream file(SettingsFilename);
+    getline (file, hotFolderPath);
+    getline (file, backupFolderPath);
+    file.close();
+}
+
 void CLI::GetHotAndBackupFolderPaths(string &hotFolderPath, string &backupFolderPath)
 {
-    cout << "Enter hot folder path: ";
-    getline(cin, hotFolderPath);
-    cout << "Enter backup folder path: ";
-    getline(cin, backupFolderPath);
+    if (filesystem::exists(SettingsFilename))
+    {
+        readHotAndBacupFolderPathFromSettingFile(hotFolderPath, backupFolderPath);
+    }
+    else
+    {
+        cout << "Enter hot folder path: ";
+        getline(cin, hotFolderPath);
+        cout << "Enter backup folder path: ";
+        getline(cin, backupFolderPath);
 
-    hotFolderPath = filesystem::path(hotFolderPath).make_preferred().string();
-    backupFolderPath = filesystem::path(backupFolderPath).make_preferred().string();
+        hotFolderPath = filesystem::path(hotFolderPath).make_preferred().string();
+        backupFolderPath = filesystem::path(backupFolderPath).make_preferred().string();
+
+        writeHotAndBacupFolderPathToSettingFile(hotFolderPath, backupFolderPath);
+    }
 }
 
 void printMenu()
