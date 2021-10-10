@@ -23,6 +23,8 @@ void CLI::GetHotAndBackupFolderPaths(string &hotFolderPath, string &backupFolder
 void printMenu()
 {
     cout << "---Logs Filter Menu---" << endl;
+    cout << " - To delete original and backup files rename file from hot folder with 'delete_' prefix" << endl;
+    cout << " - To delete original and backup files at certain time rename file from hot folder with 'delete_yyyy-mm-dd HHmmss_' prefix" << endl;
     cout << " - To view all the logs type 'a'" << endl;
     cout << " - To filter logs by date or/and time type 'd'" << endl;
     cout << " - To filter logs by filename regex type 'r'" << endl;

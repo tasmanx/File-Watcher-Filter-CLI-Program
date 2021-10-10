@@ -11,6 +11,7 @@
 int main() 
 {
     std::cout << "Welcome to File-Watcher-Filter-CLI-Program" << std::endl;
+    std::cout << "This program will accept hot folder path, backup folder path and back-up any file that is created or modified in the hot folder!" << std::endl;
     std::string hotFolderPath, backupFolderPath;
     CLI::GetHotAndBackupFolderPaths(hotFolderPath, backupFolderPath);
 
