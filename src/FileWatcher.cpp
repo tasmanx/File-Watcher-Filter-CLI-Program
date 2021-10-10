@@ -20,6 +20,7 @@ void FileWatcher::startFileWatcher(const string hotFolderPath, const string back
 
     std::chrono::duration<int, std::milli> hotFolderUpdateFrequency = std::chrono::milliseconds(1000);
     unordered_map<string, std::filesystem::file_time_type> filesList;
+    string fileDeleteKeyStr = "delete_";
 
     while (true)
     {
@@ -31,13 +32,22 @@ void FileWatcher::startFileWatcher(const string hotFolderPath, const string back
             auto fileLastModificationTime = std::filesystem::last_write_time(file);
             string hotFolderfilePathStr = file.path().string();
 
+            // check if file needs to be deleted
+            if (file.path().filename().string().substr(0, fileDeleteKeyStr.size()).compare(fileDeleteKeyStr) == 0)
+            {
+                string deletedFileName = file.path().filename().string().substr(fileDeleteKeyStr.size());
+                filesList.erase(std::filesystem::path(hotFolderPath + "/" + deletedFileName).make_preferred().string());
+                std::filesystem::remove(file);
+                std::filesystem::remove(std::filesystem::path(backupFolderPath + "/" + deletedFileName + ".bak").make_preferred().string());
+                continue;
+            }
+
             // check for new file in the hotFolder and if found:
             // - add new file to the filesList 
             // - make a copy of the file to the backup folder
             if (!filesList.contains(hotFolderfilePathStr)) 
             {
                 filesList[hotFolderfilePathStr] = fileLastModificationTime;
-
                 string backupFolderFilePathStr = std::filesystem::path(backupFolderPath + "/" + file.path().filename().string() + ".bak").make_preferred().string();
                 if (!std::filesystem::exists(backupFolderFilePathStr))
                 {
