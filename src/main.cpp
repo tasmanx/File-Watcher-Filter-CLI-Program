@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <thread>
+#include <chrono>
 
 #include "CLI.h"
 #include "FileWatcher.h"
@@ -15,5 +17,9 @@ int main()
 
     Logger logger("log.txt");
     FileWatcher fileWatcher(logger);
-    fileWatcher.startFileWatcher(hotFolderPath, backupFolderPath);
+    std::thread t = std::thread(&FileWatcher::startFileWatcher, &fileWatcher, hotFolderPath, backupFolderPath);
+
+    // TODO: add while loop with file filter menu
+
+    t.join();
 }
