@@ -5,6 +5,7 @@
 #include <string>
 #include <filesystem>
 #include <vector>
+#include <regex>
 
 using namespace std;
 
@@ -40,6 +41,7 @@ void CLI::StartFilesFilter(Logger *logger)
 {
     char menuSelectionInput;
     string inputDatetime;
+    string inputRegex;
     vector<Logger::LogData> filtered;
     while (true)
     {
@@ -66,7 +68,16 @@ void CLI::StartFilesFilter(Logger *logger)
             cout << endl; 
             break;
         case 'r':
-            //todo
+            cout << "Enter filename regex (for example: '(.*)(.txt)'): ";
+            getline(cin >> ws, inputRegex);
+            cout << endl;
+
+            filtered = filter(logger->getFilesLogList(), [&](Logger::LogData logItem) { return regex_match(logItem.filename, regex(inputRegex)); });
+            for (auto const& logItem : filtered)
+            {
+                cout << logItem.datetime << " "  << logItem.filename << " " << logItem.status << endl;
+            } 
+            cout << endl;
             break;
         case 'x':
             exit(0);
