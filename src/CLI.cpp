@@ -37,12 +37,51 @@ Cont filter(const Cont &container, Pred predicate)
     return result;
 }
 
+void printAllLogFiles(Logger *logger)
+{
+    for (auto const& logItem : logger->getFilesLogList())
+    {
+        cout << logItem.datetime << " "  << logItem.filename << " " << logItem.status << endl;
+    } 
+}
+
+void printFilteredFilesByDateTime(Logger *logger)
+{
+    string inputDatetime;
+    vector<Logger::LogData> filtered;
+
+    cout << "Enter date or/and time (for example: '2021-10-10' or/and 20:20): ";
+    getline(cin >> ws, inputDatetime);
+    cout << endl;
+
+    filtered = filter(logger->getFilesLogList(), [&](Logger::LogData logItem) { return logItem.datetime.find(inputDatetime) != string::npos; });
+    for (auto const& logItem : filtered)
+    {
+        cout << logItem.datetime << " "  << logItem.filename << " " << logItem.status << endl;
+    }
+    cout << endl; 
+}
+
+void printFilteredFilesByFilenameRegex(Logger *logger)
+{
+    string inputRegex;
+    vector<Logger::LogData> filtered;
+
+    cout << "Enter filename regex (for example: '(.*)(.txt)'): ";
+    getline(cin >> ws, inputRegex);
+    cout << endl;
+
+    filtered = filter(logger->getFilesLogList(), [&](Logger::LogData logItem) { return regex_match(logItem.filename, regex(inputRegex)); });
+    for (auto const& logItem : filtered)
+    {
+        cout << logItem.datetime << " "  << logItem.filename << " " << logItem.status << endl;
+    } 
+    cout << endl;
+}
+
 void CLI::StartFilesFilter(Logger *logger)
 {
     char menuSelectionInput;
-    string inputDatetime;
-    string inputRegex;
-    vector<Logger::LogData> filtered;
     while (true)
     {
         printMenu(); 
@@ -50,34 +89,13 @@ void CLI::StartFilesFilter(Logger *logger)
         switch (menuSelectionInput)
         {
         case 'a':
-            for (auto const& logItem : logger->getFilesLogList())
-            {
-                cout << logItem.datetime << " "  << logItem.filename << " " << logItem.status << endl;
-            } 
+            printAllLogFiles(logger);
             break;
         case 'd':
-            cout << "Enter date or/and time (for example: '2021-10-10' or/and 20:20): ";
-            getline(cin >> ws, inputDatetime);
-            cout << endl;
-
-            filtered = filter(logger->getFilesLogList(), [&](Logger::LogData logItem) { return logItem.datetime.find(inputDatetime) != string::npos; });
-            for (auto const& logItem : filtered)
-            {
-                cout << logItem.datetime << " "  << logItem.filename << " " << logItem.status << endl;
-            }
-            cout << endl; 
+            printFilteredFilesByDateTime(logger);
             break;
         case 'r':
-            cout << "Enter filename regex (for example: '(.*)(.txt)'): ";
-            getline(cin >> ws, inputRegex);
-            cout << endl;
-
-            filtered = filter(logger->getFilesLogList(), [&](Logger::LogData logItem) { return regex_match(logItem.filename, regex(inputRegex)); });
-            for (auto const& logItem : filtered)
-            {
-                cout << logItem.datetime << " "  << logItem.filename << " " << logItem.status << endl;
-            } 
-            cout << endl;
+            printFilteredFilesByFilenameRegex(logger);
             break;
         case 'x':
             exit(0);
