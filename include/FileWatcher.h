@@ -7,14 +7,14 @@
 class FileWatcher
 {
 public:
-    FileWatcher(Logger &logger);
+    FileWatcher(Logger *logger);
     
     void startFileWatcher(const std::string hotFolderPath, const std::string backupFolderPath);
 
 private:
     void createFolders(const std::string hotFolderPath, const std::string backupFolderPath);
     
-    Logger m_logger;
+    Logger *m_logger;
 };
 
 #endif // FILEWATCHER_H

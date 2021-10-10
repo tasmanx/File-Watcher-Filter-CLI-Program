@@ -15,7 +15,8 @@ const string Logger::Removed = "Removed";
 
 Logger::Logger(string logFilename) : m_logFilename(logFilename)
 {
-
+    // fill m_filesLogList vector
+    readFromLogFile();
 }
 
 string Logger::getCurrentDateTimeStr()
@@ -32,7 +33,30 @@ string Logger::getCurrentDateTimeStr()
 void Logger::writeToLogFile(string filename, string status)
 {
     string datetime = getCurrentDateTimeStr();
+    m_filesLogList.emplace_back(datetime, filename, status);
     ofstream file(m_logFilename, ios::app);
     file << datetime << ";" << filename << ";" << status << endl;
     file.close();
+}
+
+void Logger::readFromLogFile()
+{
+    stringstream ss;
+    string text;
+    ifstream file(m_logFilename);
+    while (getline (file, text)) {
+        ss << text;
+        string datetime, filename, status;
+        getline( ss, datetime, ';' );
+        getline( ss, filename, ';' );
+        getline( ss, status, ';' );
+        m_filesLogList.emplace_back(datetime, filename, status);
+        ss.clear();
+    }
+    file.close();
+}
+
+vector<Logger::LogData> Logger::getFilesLogList()
+{
+    return m_filesLogList;
 }

@@ -8,6 +8,11 @@ class Logger
 {
 public:
     Logger(std::string logFilename);
+    struct LogData {
+        std::string datetime;
+        std::string filename;
+        std::string status;
+    };
 
     static const std::string Created;
     static const std::string BackedUp;
@@ -15,10 +20,15 @@ public:
     static const std::string Removed;
     
     std::string getCurrentDateTimeStr();
+    
     void writeToLogFile(std::string filename, std::string status);
+    void readFromLogFile();
+
+    std::vector<LogData> getFilesLogList();
 
 private:
     std::string m_logFilename;
+    std::vector<LogData> m_filesLogList;
 };
 
 #endif // LOGGER_H

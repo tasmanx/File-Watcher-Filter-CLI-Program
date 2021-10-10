@@ -9,7 +9,7 @@
 using std::string;
 using std::unordered_map;
 
-FileWatcher::FileWatcher(Logger &logger) : m_logger(logger)
+FileWatcher::FileWatcher(Logger *logger) : m_logger(logger)
 {
 
 }
@@ -40,10 +40,10 @@ void FileWatcher::startFileWatcher(const string hotFolderPath, const string back
                 filesList.erase(std::filesystem::path(hotFolderPath + "/" + deletedFileName).make_preferred().string());
 
                 std::filesystem::remove(file);
-                m_logger.writeToLogFile(deletedFileName, Logger::Removed);
+                m_logger->writeToLogFile(deletedFileName, Logger::Removed);
 
                 std::filesystem::remove(std::filesystem::path(backupFolderPath + "/" + deletedFileName + ".bak").make_preferred().string());
-                m_logger.writeToLogFile(deletedFileName + ".bak", Logger::Removed);
+                m_logger->writeToLogFile(deletedFileName + ".bak", Logger::Removed);
                 continue;
             }
 
@@ -56,9 +56,9 @@ void FileWatcher::startFileWatcher(const string hotFolderPath, const string back
                 string backupFolderFilePathStr = std::filesystem::path(backupFolderPath + "/" + file.path().filename().string() + ".bak").make_preferred().string();
                 if (!std::filesystem::exists(backupFolderFilePathStr))
                 {
-                    m_logger.writeToLogFile(file.path().filename().string(), Logger::Created);
+                    m_logger->writeToLogFile(file.path().filename().string(), Logger::Created);
                     std::filesystem::copy(hotFolderfilePathStr, backupFolderFilePathStr);
-                    m_logger.writeToLogFile(file.path().filename().string() + ".bak", Logger::BackedUp);
+                    m_logger->writeToLogFile(file.path().filename().string() + ".bak", Logger::BackedUp);
                 }
             }
             else
@@ -74,8 +74,8 @@ void FileWatcher::startFileWatcher(const string hotFolderPath, const string back
                         hotFolderfilePathStr, 
                         backupFolderFilePathStr, 
                         std::filesystem::copy_options::update_existing);
-                    m_logger.writeToLogFile(file.path().filename().string(), Logger::Modified);
-                    m_logger.writeToLogFile(file.path().filename().string() + ".bak", Logger::Modified);
+                    m_logger->writeToLogFile(file.path().filename().string(), Logger::Modified);
+                    m_logger->writeToLogFile(file.path().filename().string() + ".bak", Logger::Modified);
                 }
             }
         }
