@@ -24,7 +24,11 @@ string Logger::getCurrentDateTimeStr()
     auto n = chrono::system_clock::now();
     auto in_time_t = chrono::system_clock::to_time_t(n);
     tm buf;
+#ifdef _WIN32
     localtime_s(&buf, &in_time_t);
+#else
+    localtime_r(&in_time_t, &buf);
+#endif
     stringstream ss;
     ss << put_time(&buf, "%Y-%m-%d %X");
     return ss.str();
@@ -33,7 +37,7 @@ string Logger::getCurrentDateTimeStr()
 void Logger::writeToLogFile(string filename, string status)
 {
     string datetime = getCurrentDateTimeStr();
-    m_filesLogList.emplace_back(datetime, filename, status);
+    m_filesLogList.emplace_back(Logger::LogData(datetime, filename, status));
     ofstream file(m_logFilename, ios::app);
     file << datetime << ";" << filename << ";" << status << endl;
     file.close();
