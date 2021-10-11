@@ -9,6 +9,9 @@ class Logger
 public:
     Logger(std::string logFilename);
     struct LogData {
+        LogData(std::string datetime, std::string filename, std::string status) :
+        datetime(datetime), filename(filename), status(status) { }
+
         std::string datetime;
         std::string filename;
         std::string status;
