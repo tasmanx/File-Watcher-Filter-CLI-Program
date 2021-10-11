@@ -19,13 +19,30 @@ This program will accept 'hot folder' path, 'backup folder' path and back-up any
 ## Dependencies for Running Locally
 * cmake >= 3.20.4
   * All OSes: [click here for installation instructions](https://cmake.org/install/)
+
+### and
+
 * msbuild >= 16.11 
   * Windows: [install visual studio 2019](https://visualstudio.microsoft.com/downloads/)
 
+### or
+
+* make >= 4.1 (Linux, Mac), 3.81 (Windows)
+  * Linux: make is installed by default on most Linux distros
+  * Mac: [install Xcode command line tools to get make](https://developer.apple.com/xcode/features/)
+  * Windows: [click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
+* gcc/g++ >= 8
+  * Linux: gcc / g++ is installed by default on most Linux distros
+  * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
+  * Windows: recommend using [MinGW](https://sourceforge.net/projects/mingw/)
+
 ## Instructions
 
-1. Clone the project repository: `https://github.com/tasmanx/File-Watcher-Filter-CLI-Program.git`
+1. Clone the project repository: `git clone https://github.com/tasmanx/File-Watcher-Filter-CLI-Program.git`
 2. Make a build directory in the top level directory: `mkdir build` and `cd build`
+### and
 3. Compile: `cmake ..` and `msbuild .\File-Watcher-Filter-CLI-Program.sln`
 4. Run it: `.\Debug\File-Watcher-Filter-CLI-Program.exe`
-
+### or
+3. Compile: `cmake ..` and `make`
+4. Run it: `./File-Watcher-Filter-CLI-Program`
